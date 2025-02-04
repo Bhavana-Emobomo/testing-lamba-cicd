@@ -38,27 +38,4 @@ jobs:
             --function-name test-cicd \
             --zip-file fileb://function.zip
 
-      - name: Wait for Lambda Update to Complete
-        run: |
-          echo "Waiting for Lambda update to complete..."
-          while true; do
-            STATUS=$(aws lambda get-function-configuration --function-name test-cicd --query 'State' --output text)
-            if [ "$STATUS" == "Active" ]; then
-              echo "Lambda function is Active!"
-              break
-            fi
-            echo "Still updating... Current state: $STATUS"
-            sleep 5
-          done
-
-      - name: Publish New Lambda Version
-        run: |
-          VERSION=$(aws lambda publish-version --function-name test-cicd --query 'Version' --output text)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-      - name: Update Dev Alias to Latest
-        run: |
-          aws lambda update-alias \
-            --function-name test-cicd \
-            --name dev \
-            --function-version $VERSION
+     

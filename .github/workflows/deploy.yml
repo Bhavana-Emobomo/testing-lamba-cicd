@@ -26,8 +26,26 @@ jobs:
       - name: Zip the Lambda Function
         run: zip -r function.zip . -x "*.git*" 
 
+      - name: Update Lambda Handler
+        run: |
+          aws lambda update-function-configuration \
+            --function-name test-cicd \
+            --handler handler.handler
+
       - name: Deploy to AWS Lambda
         run: |
           aws lambda update-function-code \
             --function-name test-cicd \
             --zip-file fileb://function.zip
+
+      - name: Publish New Lambda Version
+        run: |
+          VERSION=$(aws lambda publish-version --function-name test-cicd --query 'Version' --output text)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Update Dev Alias to Latest
+        run: |
+          aws lambda update-alias \
+            --function-name test-cicd \
+            --name dev \
+            --function-version $VERSION 

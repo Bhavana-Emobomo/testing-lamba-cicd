@@ -24,7 +24,7 @@ jobs:
         run: npm install
 
       - name: Zip the Lambda Function
-        run: zip -r function.zip . -x "*.git*" "node_modules/*"
+        run: zip -r function.zip . -x "*.git*" 
 
       - name: Deploy to AWS Lambda
         run: |
